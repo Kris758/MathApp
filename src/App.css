@@ -87,8 +87,11 @@ body {
 .game-container {
   position: relative;
   z-index: 1;
-  max-width: 900px;
+  width: min(100%, 1100px);
+  max-width: 100%;
   margin: 0 auto;
+  container-type: inline-size;
+  container-name: game;
 }
 
 /* Title bar */
@@ -336,13 +339,93 @@ body {
 }
 
 .question-prompt {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-size: clamp(1.25rem, 3.5cqi, 2rem);
   font-weight: 700;
   line-height: 1.3;
   color: var(--accent-warm);
   word-break: break-word;
+}
+
+/* Side-by-side problem + keypad; stacks on narrow portrait */
+.question-workspace {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 3cqi, 1.75rem);
+  align-items: center;
+}
+
+.problem-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.keypad-panel {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Vertical stacked notation (e.g. 5 + 4) */
+.stacked-math {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+.stacked-math-grid {
+  display: grid;
+  grid-template-columns: auto minmax(5ch, max-content);
+  column-gap: clamp(0.35rem, 1.5cqi, 0.75rem);
+  row-gap: clamp(0.1rem, 0.5cqi, 0.25rem);
+  align-items: center;
+  justify-content: end;
+  font-family: 'Space Grotesk', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.stacked-num,
+.stacked-answer {
+  text-align: right;
+  font-size: clamp(2rem, 8cqi, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--accent-warm);
+  padding: 0.05em 0.1em;
+}
+
+.stacked-op {
+  text-align: center;
+  font-size: clamp(1.75rem, 6cqi, 2.75rem);
+  font-weight: 700;
+  color: var(--accent);
+  align-self: center;
+  padding-right: 0.15em;
+}
+
+.stacked-rule {
+  height: 0;
+  border-bottom: clamp(3px, 0.5cqi, 5px) solid var(--text);
+  margin: clamp(0.25rem, 1cqi, 0.5rem) 0;
+  min-width: 100%;
+}
+
+.stacked-answer {
+  color: var(--text);
+  min-width: 3ch;
+  letter-spacing: 0.06em;
+}
+
+.stacked-answer.is-empty {
+  color: var(--text-muted);
+}
+
+.stacked-answer.has-value {
+  color: var(--accent);
 }
 
 .answer-section {
@@ -382,30 +465,28 @@ body {
   color: var(--text-muted);
 }
 
-/* On-screen numeric keypad (replaces device keyboard on iPad) */
+/* On-screen numeric keypad — single grid keeps tiles aligned */
 .numeric-keypad {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.45rem, 1.8cqi, 0.85rem);
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   touch-action: manipulation;
 }
 
-.keypad-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.6rem;
-}
-
 .keypad-key {
-  min-height: var(--touch-min);
-  padding: 0.85rem;
+  aspect-ratio: 1.35 / 1;
+  min-height: clamp(44px, 10cqi, 72px);
+  padding: clamp(0.5rem, 2cqi, 0.85rem);
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 4.5cqi, 1.85rem);
   font-weight: 700;
   color: var(--text);
   background: rgba(30, 40, 80, 0.9);
   border: 2px solid var(--border);
-  border-radius: 14px;
+  border-radius: clamp(10px, 2cqi, 16px);
   cursor: pointer;
   transition: transform 0.12s, background 0.12s, border-color 0.12s;
   touch-action: manipulation;
@@ -431,16 +512,17 @@ body {
 }
 
 .keypad-key--enter {
+  grid-column: 1 / -1;
+  aspect-ratio: auto;
   width: 100%;
-  min-height: 56px;
-  margin-top: 0.15rem;
-  font-size: 1.2rem;
+  min-height: clamp(48px, 9cqi, 68px);
+  font-size: clamp(1rem, 3.5cqi, 1.35rem);
   font-family: inherit;
   font-weight: 800;
   color: var(--bg-deep);
   background: linear-gradient(135deg, var(--accent-warm), #ff8c42);
   border: none;
-  border-radius: 14px;
+  border-radius: clamp(10px, 2cqi, 16px);
   box-shadow: 0 4px 16px rgba(255, 179, 71, 0.35);
 }
 
@@ -543,8 +625,8 @@ body {
 /* Tracker row */
 .tracker-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+  gap: clamp(0.6rem, 2cqi, 1rem);
   margin-bottom: 1.25rem;
 }
 
@@ -593,8 +675,8 @@ body {
 
 .badge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+  gap: clamp(0.55rem, 2cqi, 0.85rem);
 }
 
 .badge-item {
@@ -859,23 +941,42 @@ body {
 
 }
 
+/* Landscape-first: problem left, keypad right */
+@container game (min-width: 520px) {
+  .question-workspace {
+    grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.15fr);
+    gap: clamp(1.25rem, 4cqi, 2rem);
+  }
+
+  .problem-panel {
+    align-items: flex-end;
+    padding-right: clamp(0.5rem, 2cqi, 1.5rem);
+  }
+
+  .keypad-panel {
+    max-width: none;
+  }
+
+  .numeric-keypad {
+    max-width: 100%;
+    margin: 0;
+  }
+}
+
+@media (orientation: landscape) {
+  .question-workspace {
+    grid-template-columns: minmax(200px, 1fr) minmax(280px, 1.2fr);
+  }
+
+  .game-container {
+    width: min(100%, 1200px);
+  }
+}
+
 /* iPad & tablets — touch-first layout */
 @media (min-width: 600px) {
   .answer-display {
     min-height: 88px;
-  }
-
-  .keypad-key {
-    min-height: 56px;
-    font-size: 1.65rem;
-  }
-
-  .keypad-row {
-    gap: 0.75rem;
-  }
-
-  .numeric-keypad {
-    gap: 0.75rem;
   }
 }
 
@@ -959,9 +1060,18 @@ body {
   }
 
   .question-prompt {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
+    font-size: clamp(1.5rem, 3cqi, 2.25rem);
+    margin-bottom: 1.25rem;
     line-height: 1.35;
+  }
+
+  .stacked-num,
+  .stacked-answer {
+    font-size: clamp(2.5rem, 7cqi, 3.75rem);
+  }
+
+  .stacked-op {
+    font-size: clamp(2rem, 5.5cqi, 3rem);
   }
 
   .answer-display {
@@ -980,28 +1090,11 @@ body {
   }
 
   .keypad-key {
-    min-height: 64px;
-    font-size: 1.85rem;
-    border-radius: 16px;
     border-width: 3px;
   }
 
   .keypad-key--action {
-    font-size: 1.4rem;
-  }
-
-  .keypad-key--enter {
-    min-height: 68px;
-    font-size: 1.4rem;
-    border-radius: 16px;
-  }
-
-  .numeric-keypad {
-    gap: 0.85rem;
-  }
-
-  .keypad-row {
-    gap: 0.85rem;
+    font-size: clamp(1.1rem, 3.5cqi, 1.4rem);
   }
 
   .feedback {
@@ -1095,26 +1188,59 @@ body {
   }
 }
 
-/* iPad landscape — use horizontal space */
-@media (min-width: 1024px) and (orientation: landscape) {
-  .game-container {
-    max-width: 960px;
+/* iPad landscape — single-column flow; question uses internal split */
+@media (min-width: 768px) and (orientation: landscape) {
+  .app {
+    padding: 1rem 2rem 1.5rem;
+  }
+
+  .game-title-bar {
+    margin-bottom: 1rem;
+    padding: 1rem 1.5rem;
   }
 
   .game-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .level-header {
-    grid-column: 1 / -1;
     margin-bottom: 0;
   }
 
   .question-area {
     margin-bottom: 0;
+  }
+
+  .question-card {
+    padding: 1.5rem 2rem;
+  }
+
+  .tracker-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .badge-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (orientation: landscape) {
+  .game-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .level-header {
+    grid-column: 1 / -1;
+  }
+
+  .question-area {
+    grid-column: 1 / -1;
   }
 
   .tracker-row {
@@ -1133,12 +1259,8 @@ body {
     padding-bottom: 2.5rem;
   }
 
-  .answer-display-value {
-    font-size: 2.75rem;
-  }
-
   .keypad-key {
-    min-height: 60px;
+    min-height: 52px;
   }
 
   .keypad-key--enter,
@@ -1148,5 +1270,14 @@ body {
 
   .badge-item.earned:hover {
     transform: none;
+  }
+}
+
+/* Fallback when container queries unsupported: landscape split */
+@supports not (container-type: inline-size) {
+  @media (orientation: landscape) and (min-width: 640px) {
+    .question-workspace {
+      grid-template-columns: 1fr 1.15fr;
+    }
   }
 }

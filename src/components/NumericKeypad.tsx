@@ -1,8 +1,16 @@
-const DIGIT_ROWS: readonly (readonly string[])[] = [
-  ['7', '8', '9'],
-  ['4', '5', '6'],
-  ['1', '2', '3'],
-  ['0'],
+const KEYPAD_KEYS = [
+  { key: '7', label: '7', type: 'digit' as const },
+  { key: '8', label: '8', type: 'digit' as const },
+  { key: '9', label: '9', type: 'digit' as const },
+  { key: '4', label: '4', type: 'digit' as const },
+  { key: '5', label: '5', type: 'digit' as const },
+  { key: '6', label: '6', type: 'digit' as const },
+  { key: '1', label: '1', type: 'digit' as const },
+  { key: '2', label: '2', type: 'digit' as const },
+  { key: '3', label: '3', type: 'digit' as const },
+  { key: '0', label: '0', type: 'digit' as const },
+  { key: 'backspace', label: '⌫', type: 'action' as const },
+  { key: 'clear', label: 'C', type: 'action' as const },
 ];
 
 interface NumericKeypadProps {
@@ -40,45 +48,35 @@ export function NumericKeypad({
     onChange('');
   };
 
+  const handleKey = (key: (typeof KEYPAD_KEYS)[number]) => {
+    if (key.type === 'digit') handleDigit(key.key);
+    else if (key.key === 'backspace') handleBackspace();
+    else handleClear();
+  };
+
   return (
     <div className="numeric-keypad" role="group" aria-label="Number keypad">
-      {DIGIT_ROWS.map((row, rowIndex) => (
-        <div className="keypad-row" key={rowIndex}>
-          {row.map((digit) => (
-            <button
-              key={digit}
-              type="button"
-              className="keypad-key"
-              onClick={() => handleDigit(digit)}
-              disabled={disabled}
-              aria-label={`Digit ${digit}`}
-            >
-              {digit}
-            </button>
-          ))}
-          {rowIndex === DIGIT_ROWS.length - 1 && (
-            <>
-              <button
-                type="button"
-                className="keypad-key keypad-key--action"
-                onClick={handleBackspace}
-                disabled={disabled || value.length === 0}
-                aria-label="Delete last digit"
-              >
-                ⌫
-              </button>
-              <button
-                type="button"
-                className="keypad-key keypad-key--action"
-                onClick={handleClear}
-                disabled={disabled || value.length === 0}
-                aria-label="Clear answer"
-              >
-                C
-              </button>
-            </>
-          )}
-        </div>
+      {KEYPAD_KEYS.map((key) => (
+        <button
+          key={key.key}
+          type="button"
+          className={`keypad-key ${key.type === 'action' ? 'keypad-key--action' : ''}`}
+          onClick={() => handleKey(key)}
+          disabled={
+            disabled ||
+            (key.key === 'backspace' && value.length === 0) ||
+            (key.key === 'clear' && value.length === 0)
+          }
+          aria-label={
+            key.type === 'digit'
+              ? `Digit ${key.label}`
+              : key.key === 'backspace'
+                ? 'Delete last digit'
+                : 'Clear answer'
+          }
+        >
+          {key.label}
+        </button>
       ))}
       <button
         type="button"

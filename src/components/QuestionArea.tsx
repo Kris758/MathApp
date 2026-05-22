@@ -1,5 +1,7 @@
+import { parseStackedMath } from '../game/parseStackedMath';
 import type { FeedbackType, Question } from '../game/types';
 import { NumericKeypad } from './NumericKeypad';
+import { StackedMath } from './StackedMath';
 
 interface QuestionAreaProps {
   question: Question;
@@ -26,33 +28,48 @@ export function QuestionArea({
   pulse,
   disabled,
 }: QuestionAreaProps) {
+  const stacked = parseStackedMath(question.prompt);
   const displayValue = input || '—';
 
   return (
     <section className={`question-area ${shake ? 'shake' : ''} ${pulse ? 'pulse' : ''}`}>
       <div className="question-card">
         <p className="question-label">Solve this:</p>
-        <h2 className="question-prompt">{question.prompt}</h2>
 
-        <div className="answer-section">
-          <div
-            className="answer-display"
-            role="status"
-            aria-live="polite"
-            aria-label={input ? `Your answer: ${input}` : 'Your answer, empty'}
-          >
-            <span className="answer-display-value">{displayValue}</span>
-            {!input && (
-              <span className="answer-display-hint">Use the keypad below</span>
+        <div className="question-workspace">
+          <div className="problem-panel">
+            {stacked ? (
+              <StackedMath
+                operator={stacked.operator}
+                operands={stacked.operands}
+                answer={input}
+              />
+            ) : (
+              <>
+                <h2 className="question-prompt">{question.prompt}</h2>
+                <div
+                  className="answer-display"
+                  role="status"
+                  aria-live="polite"
+                  aria-label={input ? `Your answer: ${input}` : 'Your answer, empty'}
+                >
+                  <span className="answer-display-value">{displayValue}</span>
+                  {!input && (
+                    <span className="answer-display-hint">Use the keypad</span>
+                  )}
+                </div>
+              </>
             )}
           </div>
 
-          <NumericKeypad
-            value={input}
-            onChange={onInputChange}
-            onSubmit={onSubmit}
-            disabled={disabled}
-          />
+          <div className="keypad-panel">
+            <NumericKeypad
+              value={input}
+              onChange={onInputChange}
+              onSubmit={onSubmit}
+              disabled={disabled}
+            />
+          </div>
         </div>
       </div>
 
