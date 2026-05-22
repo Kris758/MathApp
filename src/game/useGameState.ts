@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   getCorrectFeedback,
   getIncorrectFeedback,
@@ -203,12 +203,13 @@ export function useGameState() {
     setIsProcessing(false);
   }, [loadLevelSession]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter') submitAnswer();
-    },
-    [submitAnswer]
-  );
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [submitAnswer]);
 
   return {
     stats,
@@ -225,7 +226,6 @@ export function useGameState() {
     showCelebration,
     shake,
     pulse,
-    handleKeyDown,
     isProcessing,
   };
 }

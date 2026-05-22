@@ -345,76 +345,126 @@ body {
   word-break: break-word;
 }
 
-.answer-row {
+.answer-section {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.answer-input {
-  flex: 1;
-  min-width: 160px;
-  padding: 0.9rem 1.1rem;
-  font-size: 1.25rem;
-  font-family: inherit;
-  font-weight: 700;
-  color: var(--text);
+.answer-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 72px;
+  padding: 1rem 1.25rem;
   background: rgba(0, 0, 0, 0.35);
   border: 2px solid var(--border);
-  border-radius: 12px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border-radius: 14px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.answer-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(110, 231, 255, 0.2);
+.answer-display-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  min-height: 1.2em;
 }
 
-.answer-input:disabled {
-  opacity: 0.6;
+.answer-display-hint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
-/* Hide number spinners for cleaner UI */
-.answer-input::-webkit-outer-spin-button,
-.answer-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* On-screen numeric keypad (replaces device keyboard on iPad) */
+.numeric-keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  touch-action: manipulation;
 }
 
-.submit-btn {
-  padding: 0.9rem 1.5rem;
+.keypad-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.keypad-key {
   min-height: var(--touch-min);
-  font-size: 1rem;
+  padding: 0.85rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(30, 40, 80, 0.9);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.12s, background 0.12s, border-color 0.12s;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.keypad-key:active:not(:disabled) {
+  transform: scale(0.96);
+  background: rgba(50, 65, 120, 0.95);
+  border-color: var(--accent);
+}
+
+.keypad-key:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.keypad-key--action {
+  font-size: 1.25rem;
+  color: var(--accent-warm);
+}
+
+.keypad-key--enter {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 0.15rem;
+  font-size: 1.2rem;
   font-family: inherit;
   font-weight: 800;
   color: var(--bg-deep);
   background: linear-gradient(135deg, var(--accent-warm), #ff8c42);
   border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  border-radius: 14px;
   box-shadow: 0 4px 16px rgba(255, 179, 71, 0.35);
-  touch-action: manipulation;
-  -webkit-user-select: none;
-  user-select: none;
+}
+
+.keypad-key--enter:active:not(:disabled) {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, #ffc966, #ff9a5c);
+  border-color: transparent;
+}
+
+.keypad-key--enter:disabled {
+  opacity: 0.65;
 }
 
 @media (hover: hover) {
-  .submit-btn:hover:not(:disabled) {
+  .keypad-key:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(45, 58, 105, 0.95);
+  }
+
+  .keypad-key--enter:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 179, 71, 0.45);
+    background: linear-gradient(135deg, var(--accent-warm), #ff8c42);
   }
-}
-
-.submit-btn:active:not(:disabled) {
-  transform: scale(0.98);
-  box-shadow: 0 2px 10px rgba(255, 179, 71, 0.35);
-}
-
-.submit-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
 }
 
 /* Feedback */
@@ -806,29 +856,26 @@ body {
     justify-content: center;
   }
 
-  .answer-row {
-    flex-direction: column;
-  }
 
-  .submit-btn {
-    width: 100%;
-  }
 }
 
 /* iPad & tablets — touch-first layout */
 @media (min-width: 600px) {
-  .answer-row {
-    flex-direction: column;
-    gap: 1rem;
+  .answer-display {
+    min-height: 88px;
   }
 
-  .answer-input {
-    width: 100%;
-    min-width: unset;
+  .keypad-key {
+    min-height: 56px;
+    font-size: 1.65rem;
   }
 
-  .submit-btn {
-    width: 100%;
+  .keypad-row {
+    gap: 0.75rem;
+  }
+
+  .numeric-keypad {
+    gap: 0.75rem;
   }
 }
 
@@ -917,19 +964,44 @@ body {
     line-height: 1.35;
   }
 
-  .answer-input {
-    padding: 1.15rem 1.35rem;
-    font-size: 1.75rem;
+  .answer-display {
+    min-height: 100px;
+    padding: 1.25rem 1.5rem;
+    border-width: 3px;
+    border-radius: 16px;
+  }
+
+  .answer-display-value {
+    font-size: 3rem;
+  }
+
+  .answer-display-hint {
+    font-size: 1rem;
+  }
+
+  .keypad-key {
     min-height: 64px;
-    border-radius: 14px;
+    font-size: 1.85rem;
+    border-radius: 16px;
     border-width: 3px;
   }
 
-  .submit-btn {
-    padding: 1.15rem 1.5rem;
-    font-size: 1.35rem;
-    min-height: 60px;
-    border-radius: 14px;
+  .keypad-key--action {
+    font-size: 1.4rem;
+  }
+
+  .keypad-key--enter {
+    min-height: 68px;
+    font-size: 1.4rem;
+    border-radius: 16px;
+  }
+
+  .numeric-keypad {
+    gap: 0.85rem;
+  }
+
+  .keypad-row {
+    gap: 0.85rem;
   }
 
   .feedback {
@@ -1061,12 +1133,15 @@ body {
     padding-bottom: 2.5rem;
   }
 
-  .answer-input {
-    font-size: 1.75rem;
-    min-height: 64px;
+  .answer-display-value {
+    font-size: 2.75rem;
   }
 
-  .submit-btn,
+  .keypad-key {
+    min-height: 60px;
+  }
+
+  .keypad-key--enter,
   .play-again-btn {
     min-height: 56px;
   }

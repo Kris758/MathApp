@@ -1,12 +1,11 @@
-import { useRef } from 'react';
 import type { FeedbackType, Question } from '../game/types';
+import { NumericKeypad } from './NumericKeypad';
 
 interface QuestionAreaProps {
   question: Question;
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
-  onKeyDown: (e: React.KeyboardEvent) => void;
   feedback: string;
   hint: string;
   feedbackType: FeedbackType;
@@ -15,17 +14,11 @@ interface QuestionAreaProps {
   disabled: boolean;
 }
 
-/** Keep only digits so the numeric keyboard works cleanly on iPad */
-function sanitizeNumericInput(value: string): string {
-  return value.replace(/\D/g, '');
-}
-
 export function QuestionArea({
   question,
   input,
   onInputChange,
   onSubmit,
-  onKeyDown,
   feedback,
   hint,
   feedbackType,
@@ -33,14 +26,7 @@ export function QuestionArea({
   pulse,
   disabled,
 }: QuestionAreaProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFocus = () => {
-    // Keep the answer box visible when the iPad keyboard opens
-    setTimeout(() => {
-      inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 300);
-  };
+  const displayValue = input || '—';
 
   return (
     <section className={`question-area ${shake ? 'shake' : ''} ${pulse ? 'pulse' : ''}`}>
@@ -48,34 +34,25 @@ export function QuestionArea({
         <p className="question-label">Solve this:</p>
         <h2 className="question-prompt">{question.prompt}</h2>
 
-        <div className="answer-row">
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            enterKeyHint="go"
-            className="answer-input"
-            value={input}
-            onChange={(e) => onInputChange(sanitizeNumericInput(e.target.value))}
-            onKeyDown={onKeyDown}
-            onFocus={handleFocus}
-            placeholder="Tap to type your answer"
-            disabled={disabled}
-            aria-label="Your answer"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-          />
-          <button
-            type="button"
-            className="submit-btn"
-            onClick={onSubmit}
-            disabled={disabled}
+        <div className="answer-section">
+          <div
+            className="answer-display"
+            role="status"
+            aria-live="polite"
+            aria-label={input ? `Your answer: ${input}` : 'Your answer, empty'}
           >
-            Check Answer
-          </button>
+            <span className="answer-display-value">{displayValue}</span>
+            {!input && (
+              <span className="answer-display-hint">Use the keypad below</span>
+            )}
+          </div>
+
+          <NumericKeypad
+            value={input}
+            onChange={onInputChange}
+            onSubmit={onSubmit}
+            disabled={disabled}
+          />
         </div>
       </div>
 

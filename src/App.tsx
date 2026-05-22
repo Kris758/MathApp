@@ -23,7 +23,6 @@ function App() {
     showCelebration,
     shake,
     pulse,
-    handleKeyDown,
     isProcessing,
     sessionInfo,
   } = useGameState();
@@ -71,7 +70,6 @@ function App() {
             input={input}
             onInputChange={setInput}
             onSubmit={submitAnswer}
-            onKeyDown={handleKeyDown}
             feedback={feedback}
             hint={hint}
             feedbackType={feedbackType}
@@ -103,7 +101,7 @@ function App() {
         </main>
 
         <footer className="game-footer">
-          <p>Tap your answer, then press Check Answer to continue your space quest!</p>
+          <p>Use the on-screen keypad to enter your answer and continue your space quest!</p>
         </footer>
       </div>
     </div>
