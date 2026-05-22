@@ -1,4 +1,4 @@
-/** Build clear, question-specific hints for a 7-year-old */
+/** Build clear, question-specific hints for a 7-year-old (no final answers). */
 
 function capWord(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
@@ -7,15 +7,10 @@ function capWord(word: string): string {
 export function hintBasicAddition(a: number, b: number): string {
   const bigger = Math.max(a, b);
   const smaller = Math.min(a, b);
-  const steps: number[] = [];
-  for (let i = 1; i <= smaller; i++) {
-    steps.push(bigger + i);
+  if (smaller <= 6) {
+    return `${a} + ${b}: Count up ${smaller} steps from ${bigger}. What number do you land on?`;
   }
-  const counting =
-    steps.length <= 6
-      ? `Count up from ${bigger}: ${steps.join(', ')}.`
-      : `Count up ${smaller} steps from ${bigger}.`;
-  return `${a} + ${b}: ${counting} The answer is ${a + b}.`;
+  return `${a} + ${b}: Start at ${bigger} and count up ${smaller} more.`;
 }
 
 export function hintWordAddition(
@@ -36,13 +31,13 @@ export function hintWordAddition(
       `${capWord(wordA)} = ${a} and ${capWord(wordB)} = ${b}. ` +
       `Add the tens: ${tensA} + ${tensB} = ${tensSum}. ` +
       `Add the ones: ${onesA} + ${onesB} = ${onesSum}. ` +
-      `Now put them together: ${tensSum} + ${onesSum} = ${a + b}.`
+      `Now add ${tensSum} and ${onesSum} together.`
     );
   }
 
   return (
     `${capWord(wordA)} = ${a} and ${capWord(wordB)} = ${b}. ` +
-    `Now add the numbers: ${a} + ${b} = ${a + b}.`
+    `Now add ${a} and ${b} together.`
   );
 }
 
@@ -52,16 +47,14 @@ export function hintTwoDigitAddition(a: number, b: number): string {
   const tensB = Math.floor(b / 10);
   const onesB = b % 10;
   const onesSum = onesA + onesB;
-  const answer = a + b;
 
   if (onesSum >= 10) {
-    const carried = Math.floor(onesSum / 10);
     const onesResult = onesSum % 10;
-    const tensTotal = tensA + tensB + carried;
+    const tensTotal = tensA + tensB + 1;
     return (
       `Break ${a} into ${tensA} tens and ${onesA} ones. Break ${b} into ${tensB} tens and ${onesB} ones. ` +
       `Ones: ${onesA} + ${onesB} = ${onesSum}. That is 1 ten and ${onesResult} ones (carry the 1). ` +
-      `Tens: ${tensA} + ${tensB} + 1 = ${tensTotal}. Answer: ${tensTotal}${onesResult} = ${answer}.`
+      `Tens: ${tensA} + ${tensB} + 1 = ${tensTotal}. Put your tens and ones together for the final number.`
     );
   }
 
@@ -69,7 +62,7 @@ export function hintTwoDigitAddition(a: number, b: number): string {
   return (
     `Add the tens: ${tensA}0 + ${tensB}0 = ${tensTotal}0. ` +
     `Add the ones: ${onesA} + ${onesB} = ${onesSum}. ` +
-    `Put them together: ${tensTotal}0 + ${onesSum} = ${answer}.`
+    `Put your tens and ones together for the final number.`
   );
 }
 
@@ -79,39 +72,41 @@ export function hintEqualGroups(
   itemLabel: string
 ): string {
   const parts = Array(groups).fill(String(each)).join(' + ');
-  const answer = groups * each;
   return (
     `${groups} groups of ${each} ${itemLabel} means ${parts}. ` +
-    `That is ${each} × ${groups} = ${answer}.`
+    `You can also think of it as ${each} × ${groups}.`
   );
 }
 
 export function hintRepeatedAddition(n: number, times: number): string {
   const parts = Array(times).fill(String(n)).join(' + ');
-  const answer = n * times;
-  return `You are adding ${n} a total of ${times} times: ${parts} = ${answer}.`;
+  return `You are adding ${n} a total of ${times} times: ${parts}. Add them all up!`;
 }
 
 export function hintGroupsShort(groups: number, each: number): string {
   const parts = Array(groups).fill(String(each)).join(' + ');
-  return `${groups} groups of ${each} means ${parts} = ${groups * each}.`;
+  return `${groups} groups of ${each} means ${parts}. What is the total?`;
 }
 
 export function hintMultiply(a: number, b: number): string {
-  const answer = a * b;
-  if (a === 0 || b === 0) return `Any number times 0 is 0. So ${a} × ${b} = 0.`;
-  if (a === 1) return `Times 1 means the number stays the same: 1 × ${b} = ${b}.`;
-  if (b === 1) return `Times 1 means the number stays the same: ${a} × 1 = ${a}.`;
-  if (a === 10) return `${b} × 10 = ${b} with a zero on the end = ${answer}.`;
-  if (b === 10) return `${a} × 10 = ${a} with a zero on the end = ${answer}.`;
+  if (a === 0 || b === 0) {
+    return `What happens when you multiply a number by 0? Try ${a} × ${b}.`;
+  }
+  if (a === 1) {
+    return `Times 1 does not change the number. Look at the other number in 1 × ${b}.`;
+  }
+  if (b === 1) {
+    return `Times 1 does not change the number. Look at the other number in ${a} × 1.`;
+  }
+  if (a === 10 || b === 10) {
+    return `Multiplying by 10 adds a zero to the end of the other number. Try ${a} × ${b}.`;
+  }
 
   const groups = a;
   const perGroup = b;
   const addition = Array(groups).fill(String(perGroup)).join(' + ');
 
-  return (
-    `${a} × ${b} means ${groups} groups of ${perGroup}: ${addition} = ${answer}.`
-  );
+  return `${a} × ${b} means ${groups} groups of ${perGroup}: ${addition}. Add them up!`;
 }
 
 export function hintBaskets(baskets: number, each: number, item: string): string {
@@ -131,18 +126,16 @@ export function hintSharing(
   items: string,
   eachPerson: string
 ): string {
-  const answer = total / divisor;
   const group = PERSON_PLURAL[eachPerson] ?? `${eachPerson}s`;
   return (
     `${total} ${items} shared equally among ${divisor} ${group} is ${total} ÷ ${divisor}. ` +
-    `Ask yourself: ${divisor} × what = ${total}? Since ${divisor} × ${answer} = ${total}, each ${eachPerson} gets ${answer}.`
+    `Ask yourself: ${divisor} × what = ${total}?`
   );
 }
 
 export function hintDivision(dividend: number, divisor: number): string {
-  const answer = dividend / divisor;
   return (
     `${dividend} ÷ ${divisor} asks: how many in each group if you split ${dividend} into ${divisor} equal groups? ` +
-    `What times ${divisor} equals ${dividend}? ${divisor} × ${answer} = ${dividend}, so the answer is ${answer}.`
+    `What times ${divisor} equals ${dividend}?`
   );
 }
